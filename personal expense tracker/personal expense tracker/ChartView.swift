@@ -33,6 +33,7 @@ struct ExpensePieChart: View {
                            .bold()
                            .foregroundColor(Color.primary)
                    }
+           
        }
    }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AddAPaymentView: View {
     @EnvironmentObject var expenseData1: ExpenseFunction
+    @EnvironmentObject var converter: CurrencyConverter
     @State private var activeError: ExpenseError?
     @State private var name = ""
     @State private var date = ""
@@ -57,8 +58,10 @@ struct AddAPaymentView: View {
                             activeError = .invalidAmount
                                 return
                             }
+                        //let userAmount = Double(amount)
+                        let amountInUSD = converter.convertToUSD(amount: amountValue, from: converter.selectedCurrency)
                         
-                        expenseData1.addExpense(name: name, amount: amountValue, category: category, note: notice, eventdate: date)
+                        expenseData1.addExpense(name: name, amount: amountInUSD, category: category, note: notice, eventdate: date)
                         dismiss()
                     }) {
                         Text("Add")

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingView: View {
+    @EnvironmentObject var converter: CurrencyConverter
     var body: some View {
         NavigationStack {
             ZStack{
@@ -15,8 +16,6 @@ struct SettingView: View {
                  .ignoresSafeArea()
                 
                 VStack {
-                   
-                    
                     VStack(alignment: .leading){
                         Spacer().frame(height: 20)
                         Text("Preferences")
@@ -26,7 +25,10 @@ struct SettingView: View {
                             Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
                             Text("Currency Conversion")
                             Spacer()
-                            Text("USD >")
+                            NavigationLink(destination: CurrencySelectionView()){
+                                Text("\(converter.selectedCurrency)")
+                            }
+                           
                                 .foregroundStyle(Color(hex:"27AE60"))
                             Spacer().frame(width: 18)
                         }
@@ -100,4 +102,5 @@ struct SettingView: View {
 
 #Preview {
     SettingView()
+        .environmentObject(CurrencyConverter())
 }

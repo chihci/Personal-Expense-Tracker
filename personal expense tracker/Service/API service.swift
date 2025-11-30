@@ -6,55 +6,64 @@
 //
 
 import Foundation
+import SwiftUI
 
-struct CurrencyResponse: Codable {
-    let data: [String: Double]
-}
 
 
 
 class CurrencyConverter: ObservableObject {
+    
+    @AppStorage("selectedCurrency") var selectedCurrency: String = "USD" {
+        didSet { /* no fetch here! */ }
+    }
+
+
     @Published var rates: [String: Double] = [:]
-    
+
     private let apiKey = "fca_live_kXr9u6RPCXDNh8pkVI3CSJ2VJr3F10kPJHPaQNq7"
-    
-    func fetchRates(base: String = "USD") {
-        let urlString = "https://api.freecurrencyapi.com/v1/latest?apikey=\(apiKey)&base_currency=\(base)"
-        
-        guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Error:", error.localizedDescription)
-                return
-            }
-            
-            guard let data = data else { return }
-            
-            do {
-                let decoded = try JSONDecoder().decode(CurrencyResponse.self, from: data)
+
+    init() {
+        fetchRates(base: "USD")
+    }
+
+    func fetchRates(base: String) {
+        let urlString = "https://api.freecurrencyapi.com/v1/latest?apikey=\(apiKey)&base_currency=USD"
+        guard let url = URL(string: urlString) else { return }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data else { return }
+
+            if let decoded = try? JSONDecoder().decode(CurrencyResponse.self, from: data) {
                 DispatchQueue.main.async {
                     self.rates = decoded.data
                 }
-            } catch {
-                print("Decode error:", error)
             }
         }.resume()
     }
     
-    /// Converts amount from one currency to another
-    func convert(amount: Double, from base: String, to target: String) -> Double? {
-        guard let baseRate = rates[base.uppercased()],
-              let targetRate = rates[target.uppercased()] else {
-            return nil
-        }
-        
-        // USD-based conversion:
-        // base → USD → target
-        let usdAmount = amount / baseRate
-        return usdAmount * targetRate
+    func convertToUSD(amount: Double, from currency: String) -> Double {
+        guard let rate = rates[currency] else { return amount }
+        return amount / rate
     }
+    
+    func convertFromUSD(amount: Double, to target: String) -> Double {//(USD) → selectedCurrency for display
+        guard let rate = rates[target] else { return amount }
+        return amount * rate
+    }
+    
+   
+
+    // format converted amount
+    func format(amount: Double) -> String {
+        let target = selectedCurrency.uppercased()
+        let converted = convertFromUSD(amount: amount, to: target)
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = target
+
+        return formatter.string(from: NSNumber(value: converted)) ?? "\(converted)"
+    }
+
 }
+

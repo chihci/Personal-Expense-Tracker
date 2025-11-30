@@ -66,6 +66,10 @@ enum ExpenseError: LocalizedError, Identifiable {
     }
 }
 
+struct CurrencyResponse: Codable {
+    let data: [String: Double]
+}
+
 
 struct ExpenseItem: Identifiable, Codable {
     var id = UUID()

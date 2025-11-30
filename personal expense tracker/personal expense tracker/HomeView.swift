@@ -26,7 +26,7 @@ struct HomeView: View {
                                     .foregroundColor(.black)
                                     .font(.headline)
                                 Spacer().frame(width: 130)
-                                NavigationLink(destination:TestCurrencyView()){Text("test currency")}
+                                
                                 NavigationLink(destination: DetailView()){
                                     Text("Details")
                                         .padding(.vertical, 10)
@@ -96,7 +96,8 @@ struct HomeView: View {
 struct HomeHistory: View {
     
     @EnvironmentObject var expenseData1: ExpenseFunction
-    
+    @EnvironmentObject var converter: CurrencyConverter
+
     var body: some View {
        List{
             ForEach(expenseData1.expense) { item in
@@ -105,7 +106,13 @@ struct HomeHistory: View {
                         .font(.headline)
                         .foregroundColor(.black)
                     Spacer()
-                    Text("\(item.amount)")
+                  
+                    /*Text(converter.format(amount: item.amount))*/
+                    Text(
+                        converter.rates.isEmpty
+                        ? "Loading..."
+                        : converter.format(amount: item.amount)
+                    )
                         .font(.headline)
                         .foregroundColor(Color(hex: "ED3F27"))
                 }
@@ -201,7 +208,7 @@ struct HomeHistory: View {
     
     return HomeView()
         .environmentObject(mock)
-    
+        .environmentObject(CurrencyConverter())
 }
 
 
