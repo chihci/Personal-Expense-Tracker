@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HistoryView: View {
     @EnvironmentObject var expenseData1: ExpenseFunction
+    @EnvironmentObject var converter: CurrencyConverter
+    
     @State var removeExpense: Bool = false
     var body: some View {
         NavigationStack {
@@ -78,7 +80,7 @@ struct HistoryView: View {
                                 Spacer()
                                
                                 VStack(alignment: .trailing, spacing: 4) {
-                                    Text(item.category == "Income" ? "+$\(Int(item.amount))" : "-$\(Int(item.amount))")
+                                    Text(item.category == "Income" ? "+\(converter.format(amount: item.amount))" : "-\(converter.format(amount: item.amount))")
                                         .font(.headline)
                                         .foregroundColor(item.category == "Income" ? .green : .red)
                                     Text(item.date)
@@ -174,4 +176,5 @@ struct HistoryView: View {
     
     return HistoryView()
         .environmentObject(mock)//it just tells the preview canvas what example data to use when rendering your view.
+        .environmentObject(CurrencyConverter())
 }

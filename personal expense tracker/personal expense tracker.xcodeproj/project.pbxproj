@@ -50,14 +50,14 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
-		648EFF852EAEEB0B005AFAFB /* ViewModel */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		648EFF882EAEEB3E005AFAFB /* Model */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Model;
+			sourceTree = "<group>";
+		};
+		64CA6C902EDCD10300E244CF /* ViewModel */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -90,8 +90,8 @@
 		648EFF1D2EAEE885005AFAFB = {
 			isa = PBXGroup;
 			children = (
+				64CA6C902EDCD10300E244CF /* ViewModel */,
 				648EFF882EAEEB3E005AFAFB /* Model */,
-				648EFF852EAEEB0B005AFAFB /* ViewModel */,
 				648EFF652EAEEAC6005AFAFB /* Service */,
 				648EFF282EAEE885005AFAFB /* personal expense tracker */,
 				648EFF372EAEE886005AFAFB /* personal expense trackerTests */,
@@ -128,8 +128,8 @@
 			fileSystemSynchronizedGroups = (
 				648EFF282EAEE885005AFAFB /* personal expense tracker */,
 				648EFF652EAEEAC6005AFAFB /* Service */,
-				648EFF852EAEEB0B005AFAFB /* ViewModel */,
 				648EFF882EAEEB3E005AFAFB /* Model */,
+				64CA6C902EDCD10300E244CF /* ViewModel */,
 			);
 			name = "personal expense tracker";
 			packageProductDependencies = (

@@ -9,11 +9,12 @@ import SwiftUI
 import Charts
 // MARK: - ExpensePieChart View
 struct ExpensePieChart: View {
- 
-    let expenses: [ExpenseCategory] = expenseData
+    @EnvironmentObject var expenseData1: ExpenseFunction
+    @EnvironmentObject var converter: CurrencyConverter
+   // let expenses: [ExpenseCategory] = expenseData
    var body: some View {
        ZStack{
-           Chart(expenses) { item in
+           Chart(expenseData1.expense) { item in
                SectorMark(
                    angle: .value("Amount", item.amount),
                    innerRadius: .ratio(0.6),
@@ -28,7 +29,8 @@ struct ExpensePieChart: View {
                        Text("Amount Spent")
                            .font(.subheadline)
                            .foregroundColor(Color.primary)
-                       Text("$6753")
+            
+               Text("\(converter.format(amount: expenseData1.totalamount()))")
                            .font(.title)
                            .bold()
                            .foregroundColor(Color.primary)
@@ -42,11 +44,13 @@ struct ExpensePieChart: View {
 // MARK: - ExpenseBarChart
 struct ExpenseBarChart: View {
     let expenses: [ExpenseCategory] = expenseData
-
+    @EnvironmentObject var expenseData1: ExpenseFunction
+    @EnvironmentObject var converter: CurrencyConverter
     var body: some View {
-        Chart(expenses) { item in
+        Chart(expenseData1.expense) { item in
             BarMark(
-                x: .value("Value", item.amount),
+                x: .value("Value", converter.convertFromUSD(amount: item.amount, to: converter.selectedCurrency)),
+
                 y: .value("Category", item.name)
             )
             .cornerRadius(4)
@@ -67,5 +71,9 @@ struct ExpenseBarChart: View {
 
 #Preview {
     ExpensePieChart()
+        .environmentObject(ExpenseFunction())
+        .environmentObject(CurrencyConverter())
     ExpenseBarChart()
+        .environmentObject(ExpenseFunction())
+        .environmentObject(CurrencyConverter())
 }

@@ -13,7 +13,7 @@ struct GoalCategoriesView: View {
     @State private var name: String = ""
     @State private var amount: String = ""
     @State private var removeCategories: Bool = false
-    //@EnvironmentObject var expenseStore: ExpenseFunction
+    
     @EnvironmentObject var expenseData1: ExpenseFunction
     var body: some View {
         NavigationStack{

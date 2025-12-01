@@ -179,7 +179,14 @@ class ExpenseFunction: ObservableObject {
         saveCategory()
     }
 
-    
+    func totalamount() -> Double {
+        var total: Double = 0
+        for item in expense {
+            total += item.amount
+        }
+        
+        return total
+    }
     
   
     
