@@ -14,6 +14,9 @@ struct AddAPaymentView: View {
     @State private var name = ""
     @State private var date = ""
     @State private var selectedCategory: categoryData?
+    @State private var showPopup = false
+    @State private var popupMessage = ""
+
 
     //@State private var category = ""
     @State private var amount = ""

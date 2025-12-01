@@ -44,20 +44,6 @@ let historyData = [
 ]
 
 
-enum NotificationType: String {
-    case goalReached
-    case overspent
-    
-    var noteDescription: String? {
-        switch self {
-        case .goalReached:
-            return "Please enter a valid number for the amount."
-        case .overspent:
-            return "Name cannot be empty."
-       
-        }
-    }
-}
 
 enum ExpenseError: LocalizedError, Identifiable {
     case invalidAmount
@@ -104,7 +90,7 @@ struct categoryData: Identifiable, Codable, Hashable {
     var target: Int
 }
 
-struct NotificationMessage: Identifiable, Codable {
+struct NotificationMessage: Identifiable, Codable, Hashable {
     var id = UUID()
     var title: String
     var body: String
@@ -117,7 +103,8 @@ class ExpenseFunction: ObservableObject {
     @AppStorage("CategoryData") private var storedCategoryData: String = "{}"
     @Published var expense:[ExpenseItem]=[]
     @Published var category:[categoryData]=[]
-    @Published var notification:[NotificationMessage]=[]
+    @Published var notification_messages:[NotificationMessage]=[]
+    
     
     init(){
         load()
@@ -214,7 +201,7 @@ class ExpenseFunction: ObservableObject {
     
   
     func checkNotification(for category: categoryData, newAmount: Double) {
-
+        
         // 1. Compute total for this category after adding the new amount
         let total = expense
             .filter { $0.category == category.catname }
@@ -240,7 +227,27 @@ class ExpenseFunction: ObservableObject {
     }
 
     
-    func overspend(amount:Double){}//make message and put it in notification array
-    func largePurchase(amount:Double){}//make message and put it in notification array
+    func overspend(amount:Double){//make message and put it in notification array
+        let newNotification = NotificationMessage(
+            id: UUID(),
+            title: "Overspend Alert!",
+            body: "You have overspent your target amount for \(amount)",
+            imageString: "checkmark.seal.fill",
+            date: "date"
+        )
+        notification_messages.append(newNotification)
+    }
+    
+    func largePurchase(amount:Double){//make message and put it in notification array
+        
+        let newNotification = NotificationMessage(
+            id: UUID(),
+            title: "Large Purchase Alert!",
+            body: "You just made a large purchase of \(amount)",
+            imageString: "exclamationmark.circle.fill",
+            date: "date"
+        )
+        notification_messages.append(newNotification)
+    }
     
 }

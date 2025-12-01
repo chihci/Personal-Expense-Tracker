@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct NotificationView: View {
+    
+    @EnvironmentObject var expenseData1: ExpenseFunction
+    
     var body: some View {
         NavigationStack{
             ZStack{
@@ -16,19 +19,19 @@ struct NotificationView: View {
                 
                 
                 VStack {
-                
+                ForEach(expenseData1.notification_messages, id: \.self) { message in
                     VStack(alignment:.leading) {
                         HStack {
-                            Image(systemName: "checkmark.seal.fill")
-                            Text("Saving Goal Reached!")
+                            Image(systemName: message.imageString)
+                            Text(message.title)
                                 .font(.headline)
                         }
                         Spacer().frame(height: 10)
                         HStack {
-                            Text("You have saved $1000 this month")
+                            Text(message.body)
                                 .font(.caption)
                             Spacer().frame(width: 90)
-                            Text("2h ago")
+                            Text(message.date)
                                 .font(.caption)
                             
                         }
@@ -37,6 +40,8 @@ struct NotificationView: View {
                     .padding(.vertical, 15)
                     .background(.white)
                     .cornerRadius(10)
+                    }
+
                     
                     
                     Spacer()
@@ -55,4 +60,5 @@ struct NotificationView: View {
 
 #Preview {
     NotificationView()
+        .environmentObject(ExpenseFunction())
 }
