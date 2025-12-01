@@ -13,7 +13,9 @@ struct AddAPaymentView: View {
     @State private var activeError: ExpenseError?
     @State private var name = ""
     @State private var date = ""
-    @State private var category = ""
+    @State private var selectedCategory: categoryData?
+
+    //@State private var category = ""
     @State private var amount = ""
     @State private var notice = ""
     @State private var recurring = false
@@ -31,7 +33,8 @@ struct AddAPaymentView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         CustomTextField(label: "Name", placeholder: "Enter payment name", text: $name)
                         CustomTextField(label: "Date", placeholder: "MM/DD/YYYY", text: $date)
-                        CustomTextField(label: "Category", placeholder: "Enter category", text: $category)
+                      
+                        CatPicker(selectedCategory: $selectedCategory)
                         
                         CustomTextField(label: "Amount", placeholder: "Enter amount", text: $amount)
                         
@@ -49,19 +52,32 @@ struct AddAPaymentView: View {
                         CustomTextField(label: "Note", placeholder: "Optional note", text: $notice)
                     }
                     .padding(.horizontal)
-                    
-               
                     Button(action: {
-                        //let amountValue = Double(amount)
                         guard let amountValue = Double(amount) else {
-                                print("Invalid amount")
                             activeError = .invalidAmount
-                                return
-                            }
-                        //let userAmount = Double(amount)
+                            return
+                        }
+
+                        // Convert currency
                         let amountInUSD = converter.convertToUSD(amount: amountValue, from: converter.selectedCurrency)
-                        
-                        expenseData1.addExpense(name: name, amount: amountInUSD, category: category, note: notice, eventdate: date)
+                        guard let cat = selectedCategory else {
+                            print("No category selected")
+                            return
+                        }
+
+
+                        // Add expense using the category name
+                        expenseData1.addExpense(
+                            name: name,
+                            amount: amountInUSD,
+                            category: cat.catname,
+                            note: notice,
+                            eventdate: date
+                        )
+
+                        // Notification based on full categoryData (correct)
+                        expenseData1.checkNotification(for: cat, newAmount: amountInUSD)
+
                         dismiss()
                     }) {
                         Text("Add")
@@ -73,8 +89,6 @@ struct AddAPaymentView: View {
                             .cornerRadius(10)
                             .foregroundStyle(.white)
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
 
                     
                     Spacer()
@@ -121,6 +135,32 @@ struct AddAPaymentView: View {
     }
 
 }
+
+// MARK: - catdropdown
+struct CatPicker: View {
+    @EnvironmentObject var expenseData1: ExpenseFunction
+    @Binding var selectedCategory: categoryData?
+
+    var body: some View {
+        Picker("Category", selection: $selectedCategory) {
+            ForEach(expenseData1.category) { cat in
+                HStack {
+                    Circle()
+                        .fill(Color(hex: cat.colorHex))
+                        .frame(width: 12, height: 12)
+                    Text(cat.catname)
+                }
+                .tag(Optional(cat))
+            }
+        }
+        .pickerStyle(MenuPickerStyle())
+        .padding()
+        .background(Color.white)
+        .cornerRadius(10)
+    }
+}
+
+
 
 #Preview {
     AddAPaymentView()

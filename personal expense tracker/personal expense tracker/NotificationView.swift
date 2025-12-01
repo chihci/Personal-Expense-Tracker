@@ -13,6 +13,8 @@ struct NotificationView: View {
             ZStack{
                 Color(hex: "F5F7FA")
                     .ignoresSafeArea()
+                
+                
                 VStack {
                 
                     VStack(alignment:.leading) {

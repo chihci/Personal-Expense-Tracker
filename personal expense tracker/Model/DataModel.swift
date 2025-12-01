@@ -44,6 +44,21 @@ let historyData = [
 ]
 
 
+enum NotificationType: String {
+    case goalReached
+    case overspent
+    
+    var noteDescription: String? {
+        switch self {
+        case .goalReached:
+            return "Please enter a valid number for the amount."
+        case .overspent:
+            return "Name cannot be empty."
+       
+        }
+    }
+}
+
 enum ExpenseError: LocalizedError, Identifiable {
     case invalidAmount
     case emptyName
@@ -82,11 +97,19 @@ struct ExpenseItem: Identifiable, Codable {
     var categoryID: UUID
 }
 
-struct categoryData: Identifiable, Codable {
+struct categoryData: Identifiable, Codable, Hashable {
     var id = UUID()
     var catname: String
     var colorHex: String
     var target: Int
+}
+
+struct NotificationMessage: Identifiable, Codable {
+    var id = UUID()
+    var title: String
+    var body: String
+    var imageString: String
+    var date: String
 }
 
 class ExpenseFunction: ObservableObject {
@@ -94,6 +117,7 @@ class ExpenseFunction: ObservableObject {
     @AppStorage("CategoryData") private var storedCategoryData: String = "{}"
     @Published var expense:[ExpenseItem]=[]
     @Published var category:[categoryData]=[]
+    @Published var notification:[NotificationMessage]=[]
     
     init(){
         load()
@@ -189,6 +213,34 @@ class ExpenseFunction: ObservableObject {
     }
     
   
+    func checkNotification(for category: categoryData, newAmount: Double) {
+
+        // 1. Compute total for this category after adding the new amount
+        let total = expense
+            .filter { $0.category == category.catname }
+            .map(\.amount)
+            .reduce(0, +)
+        print("Total: \(total)")
+        // 2. Check overspend
+        if total > Double(category.target) {
+            overspend(amount: total)
+        }
+
+        // 3. Largest previous purchase BEFORE adding the new one
+        let largestPrevious = expense
+            .filter { $0.category == category.catname }
+            .map(\.amount)
+            .max() ?? 0
+        
+        print("Larges previous spend: \(largestPrevious)")
+        // 4. Check if new amount is the largest purchase
+        if newAmount > largestPrevious {
+            largePurchase(amount: newAmount)
+        }
+    }
+
     
+    func overspend(amount:Double){}//make message and put it in notification array
+    func largePurchase(amount:Double){}//make message and put it in notification array
     
 }
