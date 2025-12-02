@@ -19,31 +19,51 @@ struct NotificationView: View {
                 
                 
                 VStack {
-                ForEach(expenseData1.notification_messages, id: \.self) { message in
-                    VStack(alignment:.leading) {
-                        HStack {
-                            Image(systemName: message.imageString)
-                            Text(message.title)
-                                .font(.headline)
-                        }
-                        Spacer().frame(height: 10)
-                        HStack {
-                            Text(message.body)
-                                .font(.caption)
-                            Spacer().frame(width: 90)
-                            Text(message.date)
-                                .font(.caption)
+                    List {
+                        ForEach(Array(expenseData1.messages.enumerated()), id: \.element.id) { index, message in
                             
+                            VStack(alignment: .leading) {
+                              
+                                    HStack {
+                                        Image(systemName: message.imageString)
+                                        Text(message.title)
+                                            .font(.headline)
+                                    }
+                                    
+                                    Spacer().frame(height: 10)
+                                    
+                                    HStack {
+                                        Text(message.body)
+                                            .font(.caption)
+                                        Spacer().frame(width: 90)
+                                        Text(message.date)
+                                            .font(.caption)
+                                    }
+                                
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 15)
+                            .background(.white)
+                            .cornerRadius(10)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    withAnimation {
+                                        expenseData1.removeNotification(at: IndexSet(integer: index))
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 15)
-                    .background(.white)
-                    .cornerRadius(10)
+                    .overlay {
+                        if expenseData1.messages.isEmpty {
+                            ContentUnavailableView("You don't have message yet.", systemImage: "envelope.open.fill", description: Text("Good, you did not have any overspending..."))
+                        }
                     }
 
-                    
-                    
+
+
                     Spacer()
                     
                 }

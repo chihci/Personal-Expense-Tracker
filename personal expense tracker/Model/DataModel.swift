@@ -87,7 +87,7 @@ struct categoryData: Identifiable, Codable, Hashable {
     var id = UUID()
     var catname: String
     var colorHex: String
-    var target: Int
+    var target: Double
 }
 
 struct NotificationMessage: Identifiable, Codable, Hashable {
@@ -101,14 +101,22 @@ struct NotificationMessage: Identifiable, Codable, Hashable {
 class ExpenseFunction: ObservableObject {
     @AppStorage("ExpenseData") private var storedData: String = "{}"
     @AppStorage("CategoryData") private var storedCategoryData: String = "{}"
+    @AppStorage("NotificationMesaage") private var storednotification: String = "{}"
+    @AppStorage("alertsEnabled") var alertsEnabled: Bool = true
+    
+    //notification_messages
     @Published var expense:[ExpenseItem]=[]
     @Published var category:[categoryData]=[]
-    @Published var notification_messages:[NotificationMessage]=[]
+    @Published var messages:[NotificationMessage]=[]
     
-    
+    @Published var showBanner: Bool = false
+    @Published var bannerTitle: String = ""
+    @Published var bannerMessage: String = ""
+
     init(){
         load()
         loadCategory()
+        loadNotification()
     }
     
     private func load() {
@@ -130,6 +138,15 @@ class ExpenseFunction: ObservableObject {
          }
     }
     
+    private func loadNotification() {
+        if let data = storednotification.data(using: .utf8),//json only accept data not string
+            let decoded = try? JSONDecoder().decode([NotificationMessage].self, from: data) {//converting data in json back to swift data
+            messages = decoded
+         }else {
+             messages = []
+         }
+    }
+    
     private func save() {
         if let json = try? JSONEncoder().encode(expense) {
             storedData = String(data: json, encoding: .utf8) ?? "{}"
@@ -143,6 +160,13 @@ class ExpenseFunction: ObservableObject {
             storedCategoryData = String(data: json, encoding: .utf8) ?? "{}"
          }
     }
+    
+    private func saveNotification() {
+        if let json = try? JSONEncoder().encode(messages) {
+            storednotification = String(data: json, encoding: .utf8) ?? "{}"
+         }
+    }
+
     
     private func todayString() -> String {//return a string
         let formatter = DateFormatter()//telling formatter how to convert a date to string
@@ -178,7 +202,7 @@ class ExpenseFunction: ObservableObject {
         let newCategory = categoryData(
             catname: catname,
             colorHex: hex,
-            target: target
+            target: Double(target)
         )
 
         category.append(newCategory)
@@ -207,10 +231,10 @@ class ExpenseFunction: ObservableObject {
             .filter { $0.category == category.catname }
             .map(\.amount)
             .reduce(0, +)
-        print("Total: \(total)")
+
         // 2. Check overspend
         if total > Double(category.target) {
-            overspend(amount: total)
+            overspend(amount: total, category: category)
         }
 
         // 3. Largest previous purchase BEFORE adding the new one
@@ -219,7 +243,7 @@ class ExpenseFunction: ObservableObject {
             .map(\.amount)
             .max() ?? 0
         
-        print("Larges previous spend: \(largestPrevious)")
+    
         // 4. Check if new amount is the largest purchase
         if newAmount > largestPrevious {
             largePurchase(amount: newAmount)
@@ -227,15 +251,24 @@ class ExpenseFunction: ObservableObject {
     }
 
     
-    func overspend(amount:Double){//make message and put it in notification array
+    func overspend(amount:Double, category: categoryData){//make message and put it in notification array
+        
+        let result = amount-category.target
+        let display = String(format: "%.2f", result)
         let newNotification = NotificationMessage(
             id: UUID(),
             title: "Overspend Alert!",
-            body: "You have overspent your target amount for \(amount)",
-            imageString: "checkmark.seal.fill",
+            body: "You have overspent your target amount for \(display)",
+            imageString: "exclamationmark.circle.fill",
             date: "date"
         )
-        notification_messages.append(newNotification)
+        
+        messages.append(newNotification)
+        showAlertBanner(
+                title: "Overspend Alert!",
+                message: "You exceeded your budget by \(display)"
+            )
+        saveNotification()
     }
     
     func largePurchase(amount:Double){//make message and put it in notification array
@@ -247,7 +280,29 @@ class ExpenseFunction: ObservableObject {
             imageString: "exclamationmark.circle.fill",
             date: "date"
         )
-        notification_messages.append(newNotification)
+        messages.append(newNotification)
+        showAlertBanner(
+            title: "Large Purchase Alert!",
+            message: "You spent \(amount) in a single purchase"
+        )
+        saveNotification()
+
     }
     
+    func removeNotification(at offsets: IndexSet) {
+        messages.remove(atOffsets: offsets)
+        saveNotification()
+    }
+    
+    func showAlertBanner(title: String, message: String) {
+            guard alertsEnabled else { return }
+
+            bannerTitle = title
+            bannerMessage = message
+            withAnimation { showBanner = true }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                withAnimation { self.showBanner = false }
+            }
+        }
 }

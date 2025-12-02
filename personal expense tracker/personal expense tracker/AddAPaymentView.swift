@@ -14,9 +14,6 @@ struct AddAPaymentView: View {
     @State private var name = ""
     @State private var date = ""
     @State private var selectedCategory: categoryData?
-    @State private var showPopup = false
-    @State private var popupMessage = ""
-
 
     //@State private var category = ""
     @State private var amount = ""
@@ -145,25 +142,79 @@ struct CatPicker: View {
     @Binding var selectedCategory: categoryData?
 
     var body: some View {
-        Picker("Category", selection: $selectedCategory) {
-            ForEach(expenseData1.category) { cat in
-                HStack {
-                    Circle()
-                        .fill(Color(hex: cat.colorHex))
-                        .frame(width: 12, height: 12)
-                    Text(cat.catname)
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Category")
+                .font(.headline)
+                .foregroundColor(.black)
+            Menu {
+                ForEach(expenseData1.category) { cat in
+                    Button {
+                        selectedCategory = cat
+                    } label: {
+                        HStack {
+                            Circle()
+                                .fill(Color(hex: cat.colorHex))
+                                .frame(width: 10, height: 10)
+                            Text(cat.catname)
+                        }
+                    }
                 }
-                .tag(Optional(cat))
+            } label: {
+                HStack {
+                    if let cat = selectedCategory {
+                        HStack {
+                            Circle()
+                                .fill(Color(hex: cat.colorHex))
+                                .frame(width: 10, height: 10)
+                            Text(cat.catname)
+                                .foregroundColor(.black)
+                        }
+                    } else {
+                        Text("Select category")
+                            .foregroundColor(.gray)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .background(Color.white)
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                )
             }
         }
-        .pickerStyle(MenuPickerStyle())
-        .padding()
-        .background(Color.white)
-        .cornerRadius(10)
+
     }
 }
 
 
+// MARK: - BannerMessage View
+struct BannerMessage: View {
+    var title: String
+    var message: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.headline)
+            Text(message)
+                .font(.subheadline)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.yellow.opacity(0.95))
+        .cornerRadius(12)
+        .shadow(radius: 4)
+        .padding(.horizontal)
+    }
+}
 
 #Preview {
     AddAPaymentView()

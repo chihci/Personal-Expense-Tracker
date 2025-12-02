@@ -88,11 +88,19 @@ struct HistoryView: View {
                                         .foregroundColor(.gray)
                                 }
                             }
+                            
                         }
-                       
+                        
                        
                     }
                     .listStyle(.plain)
+                    .overlay {
+                        if expenseData1.expense.isEmpty {
+                            ContentUnavailableView("You don't have spending yet.", systemImage: "square.and.pencil", description: Text("Add a spending to get started."))
+                        }
+                    }
+
+                    
                     HStack(spacing: 15) {
                         Button(action: {
                             removeExpense.toggle()
@@ -120,6 +128,15 @@ struct HistoryView: View {
 
                     }
                     Spacer()
+                    if expenseData1.showBanner {
+                                   BannerMessage(
+                                       title: expenseData1.bannerTitle,
+                                       message: expenseData1.bannerMessage
+                                   )
+                                   .transition(.move(edge: .top).combined(with: .opacity))
+                                   .zIndex(10)
+                                   .padding(.top, 10)
+                               }
                 }
                
             }

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingView: View {
     @EnvironmentObject var converter: CurrencyConverter
+    @AppStorage("alertsEnabled") var alertsEnabled: Bool = true
+
     var body: some View {
         NavigationStack {
             ZStack{
@@ -46,8 +48,9 @@ struct SettingView: View {
                                 Image(systemName: "exclamationmark.triangle")
                                 Text("Budget Alerts")
                                 Spacer()
-                                Text("OFF")
-                                    .foregroundStyle(Color(hex:"27AE60"))
+                              
+                                Toggle("", isOn: $alertsEnabled)
+                                            .labelsHidden()
                                 Spacer().frame(width: 18)
                             }
                             .frame(width: 350)
@@ -55,18 +58,7 @@ struct SettingView: View {
                             .background(.white)
                             .cornerRadius(10)
                             
-                            HStack {
-                                Image(systemName: "checkmark.bubble")
-                                Text("Goal Reminders")
-                                Spacer()
-                                Text("ON")
-                                    .foregroundStyle(Color(hex:"27AE60"))
-                                Spacer().frame(width: 18)
-                            }
-                            .frame(width: 350)
-                            .padding(.vertical, 10)
-                            .background(.white)
-                            .cornerRadius(10)
+                           
                         }
                         
                         

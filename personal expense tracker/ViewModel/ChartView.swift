@@ -14,28 +14,51 @@ struct ExpensePieChart: View {
    // let expenses: [ExpenseCategory] = expenseData
    var body: some View {
        ZStack{
-           Chart(expenseData1.expense) { item in
-               SectorMark(
-                   angle: .value("Amount", item.amount),
-                   innerRadius: .ratio(0.6),
-                   angularInset: 1.0
-               )
-               .foregroundStyle(by: .value("Category", item.name))
+           if expenseData1.expense.isEmpty {
+            Chart {
+                SectorMark(
+                 angle: .value("Amount", 1),
+                 innerRadius: .ratio(0.6)
+                        )
+                  }
+                  .foregroundStyle(Color.gray.opacity(0.3))
+                  .frame(height: 300)
+               
+               VStack(spacing: 4) {
+                   Text("Amount Spent")
+                       .font(.subheadline)
+                       .foregroundColor(Color.primary)
+                   
+                   Text("\(converter.format(amount: expenseData1.totalamount()))")
+                       .font(.title2)
+                       .foregroundColor(Color.primary)
+               }
            }
-           .chartLegend(position: .bottom, spacing: 10)
-           .frame(height: 300)
-           
-           VStack(spacing: 4) {
-                       Text("Amount Spent")
-                           .font(.subheadline)
-                           .foregroundColor(Color.primary)
-            
-               Text("\(converter.format(amount: expenseData1.totalamount()))")
-                           .font(.title)
-                           .bold()
-                           .foregroundColor(Color.primary)
-                   }
-           
+           else
+           {
+               Chart(expenseData1.expense) { item in
+                   SectorMark(
+                       angle: .value("Amount", item.amount),
+                       innerRadius: .ratio(0.6),
+                       angularInset: 1.0
+                   )
+                   .foregroundStyle(by: .value("Category", item.category))
+               }
+               .chartLegend(position: .bottom, spacing: 10)
+               .frame(height: 300)
+               
+               VStack(spacing: 4) {
+                   Text("Amount Spent")
+                       .font(.subheadline)
+                       .foregroundColor(Color.primary)
+                   
+                   Text("\(converter.format(amount: expenseData1.totalamount()))")
+                       .font(.title2)
+                       .foregroundColor(Color.primary)
+                   Spacer().frame(height: 15)
+               }
+
+           }
        }
    }
 }
@@ -51,10 +74,10 @@ struct ExpenseBarChart: View {
             BarMark(
                 x: .value("Value", converter.convertFromUSD(amount: item.amount, to: converter.selectedCurrency)),
 
-                y: .value("Category", item.name)
+                y: .value("Category", item.category)
             )
             .cornerRadius(4)
-            .foregroundStyle(by: .value("Category", item.name))
+            .foregroundStyle(by: .value("Category", item.category))
 
         }
         .chartYAxis {
@@ -65,6 +88,15 @@ struct ExpenseBarChart: View {
         .background(Color.white)
         .cornerRadius(12)
         .shadow(radius: 2)
+        .overlay {
+                    if expenseData1.expense.isEmpty {
+                        ContentUnavailableView(
+                            "No Data Yet",
+                            systemImage: "chart.bar.yaxis",
+                            description: Text("Add your first expense to see your chart.")
+                        )
+                    }
+                }
     }
 }
 

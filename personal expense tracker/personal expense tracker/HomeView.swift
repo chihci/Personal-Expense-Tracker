@@ -11,7 +11,8 @@ import Charts
 struct HomeView: View {
     
     @EnvironmentObject var expenseData1: ExpenseFunction
-    
+
+
     var body: some View {
             NavigationStack{
                 ZStack{
@@ -25,7 +26,7 @@ struct HomeView: View {
                                 Text("Monthly Summary")
                                     .foregroundColor(.black)
                                     .font(.headline)
-                                Spacer().frame(width: 130)
+                                Spacer().frame(width: 120)
                                 
                                 NavigationLink(destination: DetailView()){
                                     Text("Details")
@@ -64,7 +65,15 @@ struct HomeView: View {
                             Text("Spending History")
                                 .foregroundColor(.black)
                                 .font(.headline)
-                            Spacer().frame(width: 150)
+                            Spacer().frame(width: 70)
+                            NavigationLink(destination: AddAPaymentView()){
+                                Text("Add")
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 17)
+                                    .background(Color(hex:"27AE60"))
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
                             NavigationLink(destination: HistoryView()){
                                 Text("View")
                                     .padding(.vertical, 10)
@@ -78,8 +87,15 @@ struct HomeView: View {
                        
                         
                         HomeHistory()
-                        
-                       
+                        if expenseData1.showBanner {
+                                       BannerMessage(
+                                           title: expenseData1.bannerTitle,
+                                           message: expenseData1.bannerMessage
+                                       )
+                                       .transition(.move(edge: .top).combined(with: .opacity))
+                                       .zIndex(10)
+                                       .padding(.top, 10)
+                                   }
                         
                       // Spacer().frame(height: 200)
                         
@@ -91,6 +107,9 @@ struct HomeView: View {
     
 
 }
+
+
+
 
 // MARK: - ExpensePieChart View
 struct HomeHistory: View {
@@ -133,32 +152,19 @@ struct HomeHistory: View {
                    )
                    Spacer().frame(height: 40)
 
-                   NavigationLink(destination: AddAPaymentView()) {
+                  /* NavigationLink(destination: AddAPaymentView()) {
                        Text("Add here")
                            .padding(.vertical, 10)
                            .padding(.horizontal, 17)
                            .background(Color(hex:"27AE60"))
                            .foregroundColor(.white)
                            .cornerRadius(10)
-                   }
+                   }*/
                }
                .padding(.top, 40) // optional: adjust vertical position
            }
        }
 
-       /*.overlay {
-           if expenseData1.expense.isEmpty {
-               ContentUnavailableView("No Spending Yet", systemImage: "pencil.and.list.clipboard", description: Text("Add your first spending inside Spending hisory!"))
-               NavigationLink(destination: AddAPaymentView()){
-                   Text("Add here")
-                       .padding(.vertical, 10)
-                       .padding(.horizontal, 17)
-                       .background(Color(hex:"27AE60"))
-                       .foregroundColor(.white)
-                       .cornerRadius(10)
-               }
-           }
-       }*/
     }
 }
 
