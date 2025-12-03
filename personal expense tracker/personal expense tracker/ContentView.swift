@@ -19,7 +19,7 @@ struct ContentView: View {
             NotificationView()
                 .tabItem{
                     Image(systemName: "bell")
-                    Text("Notification")
+                    Text("Notifications")
                 }
             SettingView()
                 .tabItem{

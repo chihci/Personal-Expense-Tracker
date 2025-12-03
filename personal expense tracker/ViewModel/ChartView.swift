@@ -40,9 +40,10 @@ struct ExpensePieChart: View {
                    SectorMark(
                        angle: .value("Amount", item.amount),
                        innerRadius: .ratio(0.6),
-                       angularInset: 1.0
+                       angularInset: 0.0
                    )
-                   .foregroundStyle(by: .value("Category", item.category))
+                   .foregroundStyle(expenseData1.colorForCategory(named: item.category))
+
                }
                .chartLegend(position: .bottom, spacing: 10)
                .frame(height: 300)
@@ -55,12 +56,15 @@ struct ExpensePieChart: View {
                    Text("\(converter.format(amount: expenseData1.totalamount()))")
                        .font(.title2)
                        .foregroundColor(Color.primary)
-                   Spacer().frame(height: 15)
+                   //Spacer().frame(height: 0)
                }
 
            }
        }
    }
+    
+   
+
 }
 
 
@@ -77,7 +81,7 @@ struct ExpenseBarChart: View {
                 y: .value("Category", item.category)
             )
             .cornerRadius(4)
-            .foregroundStyle(by: .value("Category", item.category))
+            .foregroundStyle(expenseData1.colorForCategory(named: item.category))
 
         }
         .chartYAxis {
@@ -98,6 +102,9 @@ struct ExpenseBarChart: View {
                     }
                 }
     }
+    
+    
+
 }
 
 

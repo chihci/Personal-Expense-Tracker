@@ -32,22 +32,13 @@ struct AddAPaymentView: View {
                     Spacer().frame(height: 20)
                     VStack(alignment: .leading, spacing: 16) {
                         CustomTextField(label: "Name", placeholder: "Enter payment name", text: $name)
-                        CustomTextField(label: "Date", placeholder: "MM/DD/YYYY", text: $date)
+                        //CustomTextField(label: "Date", placeholder: "MM/DD/YYYY", text: $date)
                       
                         CatPicker(selectedCategory: $selectedCategory)
                         
                         CustomTextField(label: "Amount", placeholder: "Enter amount", text: $amount)
                         
-                       /* HStack {
-                            Text("Recurring")
-                                .font(.headline)
-                            Spacer()
-                            Toggle("", isOn: $recurring)
-                                .labelsHidden()
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)*/
+                   
                         
                         CustomTextField(label: "Note", placeholder: "Optional note", text: $notice)
                     }

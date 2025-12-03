@@ -11,7 +11,12 @@ struct HistoryView: View {
     @EnvironmentObject var expenseData1: ExpenseFunction
     @EnvironmentObject var converter: CurrencyConverter
     
+    
+    
     @State var removeExpense: Bool = false
+    
+    
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -20,33 +25,21 @@ struct HistoryView: View {
 
                 VStack(spacing: 12) {
 
-                    HStack(spacing: 15) {//inop
+                    HStack(spacing: 10) {
                         Spacer()
-                        Text("Filter:")
-                            .fontWeight(.semibold)
-                        Spacer()
-                        Text("By Month")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 10)
-                            .background(.white)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                            )
-                            .cornerRadius(8)
-                        Spacer()
-                        Text("By Week")
-                        Spacer()
-                        Text("By Day")
+
+                        filterButton(title: "By Date", filter: .date)
+                        filterButton(title: "By Category", filter: .category)
+                        filterButton(title: "By Amount", filter: .amount)
+
+
                         Spacer()
                     }
-                    .font(.caption)
                     .padding(.horizontal)
-                   
+                    .padding(.top, 12)
+
                     List { 
-                        ForEach(expenseData1.expense){item in
+                        ForEach(expenseData1.sortedExpenses) { item in
                             HStack(alignment: .top, spacing: 10) {
                                 if removeExpense {
                                                 Button(action: {
@@ -59,10 +52,11 @@ struct HistoryView: View {
                                                         .padding(.trailing, 8)
                                                 }
                                             }
-                               /* Rectangle()
-                                    .fill(item.color)
+                                Rectangle()
+                                    .fill(expenseData1.colorForCategory(named: item.category))
+
                                     .frame(width: 3)
-                                    .cornerRadius(1)*/
+                                    .cornerRadius(1)
 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(item.category)
@@ -147,6 +141,33 @@ struct HistoryView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
+    @ViewBuilder
+    func filterButton(title: String, filter: HistoryFilter)
+ -> some View {
+        Text(title)
+            .font(.caption)
+            .fontWeight(expenseData1.selectedFilter == filter ? .bold : .medium)
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .background(expenseData1.selectedFilter == filter ? Color(hex: "27AE60") : .white)
+            .foregroundColor(expenseData1.selectedFilter == filter ? .white : .black)
+            .cornerRadius(8)
+            .onTapGesture {
+                expenseData1.selectedFilter = filter
+            }
+    }
+
+    /*func colorFor(item: ExpenseItem) -> Color {
+        if let cat = expenseData1.category.first(where: { $0.catname == item.category }) {
+            return Color(hex: cat.colorHex)
+        }
+        return .gray   // fallback color
+    }*/
+    
+    
+    
+
+
 }
 
 #Preview {

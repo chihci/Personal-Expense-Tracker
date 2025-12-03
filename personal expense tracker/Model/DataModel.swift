@@ -67,6 +67,8 @@ enum ExpenseError: LocalizedError, Identifiable {
     }
 }
 
+
+
 struct CurrencyResponse: Codable {
     let data: [String: Double]
 }
@@ -95,13 +97,46 @@ struct NotificationMessage: Identifiable, Codable, Hashable {
     var title: String
     var body: String
     var imageString: String
-    var date: String
+    var date: Date = Date()
 }
+
+extension Date {
+    func timeAgo() -> String {
+        let seconds = Int(Date().timeIntervalSince(self))
+
+        if seconds < 60 {
+            return "Just now"
+        } else if seconds < 3600 {
+            return "\(seconds / 60) minutes ago"
+        } else if seconds < 86400 {
+            return "\(seconds / 3600) hours ago"
+        } else if seconds < 172800 {
+            return "Yesterday"
+        } else {
+            return "\(seconds / 86400) days ago"
+        }
+    }
+}
+
+extension Date {
+    func timeAgoString() -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: self, relativeTo: Date())
+    }
+}
+
+enum HistoryFilter: String, Codable {
+    case date
+    case category
+    case amount
+}
+
 
 class ExpenseFunction: ObservableObject {
     @AppStorage("ExpenseData") private var storedData: String = "{}"
     @AppStorage("CategoryData") private var storedCategoryData: String = "{}"
-    @AppStorage("NotificationMesaage") private var storednotification: String = "{}"
+    @AppStorage("NotificationMessage") private var storednotification: String = "{}"
     @AppStorage("alertsEnabled") var alertsEnabled: Bool = true
     
     //notification_messages
@@ -112,6 +147,24 @@ class ExpenseFunction: ObservableObject {
     @Published var showBanner: Bool = false
     @Published var bannerTitle: String = ""
     @Published var bannerMessage: String = ""
+    
+    @Published var selectedFilter: HistoryFilter = .date
+    
+    var sortedExpenses: [ExpenseItem] {
+        switch selectedFilter {
+        case .date:
+            // descending by date string
+            return expense 
+            
+        case .category:
+            return expense.sorted { $0.category < $1.category }
+            
+        case .amount:
+            return expense.sorted { $0.amount > $1.amount }
+        }
+    }
+
+
 
     init(){
         load()
@@ -242,10 +295,11 @@ class ExpenseFunction: ObservableObject {
             .filter { $0.category == category.catname }
             .map(\.amount)
             .max() ?? 0
-        
-    
+        print("largestPrevious: \(largestPrevious)")
+        print("newAmount: \(newAmount)")
         // 4. Check if new amount is the largest purchase
-        if newAmount > largestPrevious {
+        if newAmount >= largestPrevious {
+            print("calling large purchase")
             largePurchase(amount: newAmount)
         }
     }
@@ -258,15 +312,15 @@ class ExpenseFunction: ObservableObject {
         let newNotification = NotificationMessage(
             id: UUID(),
             title: "Overspend Alert!",
-            body: "You have overspent your target amount for \(display)",
+            body: "You have overspent your target amount for $\(display)",
             imageString: "exclamationmark.circle.fill",
-            date: "date"
+            date: Date()
         )
         
         messages.append(newNotification)
         showAlertBanner(
                 title: "Overspend Alert!",
-                message: "You exceeded your budget by \(display)"
+                message: "You exceeded your budget by $\(display)"//converter.format(amount: item.amount)
             )
         saveNotification()
     }
@@ -276,14 +330,14 @@ class ExpenseFunction: ObservableObject {
         let newNotification = NotificationMessage(
             id: UUID(),
             title: "Large Purchase Alert!",
-            body: "You just made a large purchase of \(amount)",
+            body: "You just made a large purchase of $\(amount)",
             imageString: "exclamationmark.circle.fill",
-            date: "date"
+            date: Date()
         )
         messages.append(newNotification)
         showAlertBanner(
             title: "Large Purchase Alert!",
-            message: "You spent \(amount) in a single purchase"
+            message: "You spent $\(amount) in a single purchase"
         )
         saveNotification()
 
@@ -305,4 +359,11 @@ class ExpenseFunction: ObservableObject {
                 withAnimation { self.showBanner = false }
             }
         }
+    
+    func colorForCategory(named name: String) -> Color {
+        if let cat = category.first(where: { $0.catname == name }) {
+            return Color(hex: cat.colorHex)
+        }
+        return .gray
+    }
 }

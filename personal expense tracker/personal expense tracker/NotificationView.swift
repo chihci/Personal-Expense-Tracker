@@ -17,8 +17,6 @@ struct NotificationView: View {
                 Color(hex: "F5F7FA")
                     .ignoresSafeArea()
                 
-                
-                VStack {
                     List {
                         ForEach(Array(expenseData1.messages.enumerated()), id: \.element.id) { index, message in
                             
@@ -35,14 +33,14 @@ struct NotificationView: View {
                                     HStack {
                                         Text(message.body)
                                             .font(.caption)
-                                        Spacer().frame(width: 90)
-                                        Text(message.date)
+                                        Spacer()
+                                        Text(message.date.timeAgoString())
                                             .font(.caption)
+                                            .foregroundColor(.gray)
                                     }
-                                
                             }
                             .padding(.horizontal, 10)
-                            .padding(.vertical, 15)
+                            //.padding(.vertical, 15)
                             .background(.white)
                             .cornerRadius(10)
                             .swipeActions(edge: .trailing) {
@@ -66,9 +64,9 @@ struct NotificationView: View {
 
                     Spacer()
                     
-                }
+             
             }
-            .navigationTitle(Text("Notification"))
+            .navigationTitle(Text("Notifications"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(Color(hex:"2C3E50"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
