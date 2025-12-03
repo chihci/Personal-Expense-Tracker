@@ -15,7 +15,7 @@ struct AddAPaymentView: View {
     @State private var date = ""
     @State private var selectedCategory: categoryData?
 
-    //@State private var category = ""
+    
     @State private var amount = ""
     @State private var notice = ""
     @State private var recurring = false
@@ -32,13 +32,10 @@ struct AddAPaymentView: View {
                     Spacer().frame(height: 20)
                     VStack(alignment: .leading, spacing: 16) {
                         CustomTextField(label: "Name", placeholder: "Enter payment name", text: $name)
-                        //CustomTextField(label: "Date", placeholder: "MM/DD/YYYY", text: $date)
                       
                         CatPicker(selectedCategory: $selectedCategory)
                         
                         CustomTextField(label: "Amount", placeholder: "Enter amount", text: $amount)
-                        
-                   
                         
                         CustomTextField(label: "Note", placeholder: "Optional note", text: $notice)
                     }

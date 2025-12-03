@@ -118,6 +118,7 @@ struct HomeHistory: View {
     @EnvironmentObject var converter: CurrencyConverter
 
     var body: some View {
+        
        List{
             ForEach(expenseData1.expense) { item in
                 HStack {
@@ -152,14 +153,7 @@ struct HomeHistory: View {
                    )
                    Spacer().frame(height: 40)
 
-                  /* NavigationLink(destination: AddAPaymentView()) {
-                       Text("Add here")
-                           .padding(.vertical, 10)
-                           .padding(.horizontal, 17)
-                           .background(Color(hex:"27AE60"))
-                           .foregroundColor(.white)
-                           .cornerRadius(10)
-                   }*/
+                 
                }
                .padding(.top, 40) // optional: adjust vertical position
            }

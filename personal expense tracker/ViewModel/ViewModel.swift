@@ -27,9 +27,7 @@ struct HistoryList: Identifiable {
 }
 
 
-
-
-let expenseData = [
+let expenseData = [//preview data
     ExpenseCategory(name: "Food", amount: 320, target: 300, color: .red),
     ExpenseCategory(name: "Transportation", amount: 150, target: 200, color: .blue),
     ExpenseCategory(name: "Shopping", amount: 450, target: 400, color: .orange),
@@ -38,85 +36,11 @@ let expenseData = [
 ]
 
 
-let historyData = [
+let historyData = [//preview data
     HistoryList(name: "Food", amount: 100, date: "Today", category: "Food", note: "Lunch with friends", color: .red),
     HistoryList(name: "Salary", amount: 1000, date: "Today", category: "Income", note: "Salary from job",color: .blue)
 ]
 
-
-
-enum ExpenseError: LocalizedError, Identifiable {
-    case invalidAmount
-    case emptyName
-    case emptyCategory
-    case invalidDate
-    
-    var id: String { UUID().uuidString }
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidAmount:
-            return "Please enter a valid number for the amount."
-        case .emptyName:
-            return "Name cannot be empty."
-        case .emptyCategory:
-            return "Please select or enter a category."
-        case .invalidDate:
-            return "Please enter a valid date."
-        }
-    }
-}
-
-
-
-struct CurrencyResponse: Codable {
-    let data: [String: Double]
-}
-
-
-struct ExpenseItem: Identifiable, Codable {
-    var id = UUID()
-    var name: String
-    var amount: Double
-    var date: String//for text only
-    var category: String
-    var note: String
-    var eventdate: String
-    var categoryID: UUID
-}
-
-struct categoryData: Identifiable, Codable, Hashable {
-    var id = UUID()
-    var catname: String
-    var colorHex: String
-    var target: Double
-}
-
-struct NotificationMessage: Identifiable, Codable, Hashable {
-    var id = UUID()
-    var title: String
-    var body: String
-    var imageString: String
-    var date: Date = Date()
-}
-
-extension Date {
-    func timeAgo() -> String {
-        let seconds = Int(Date().timeIntervalSince(self))
-
-        if seconds < 60 {
-            return "Just now"
-        } else if seconds < 3600 {
-            return "\(seconds / 60) minutes ago"
-        } else if seconds < 86400 {
-            return "\(seconds / 3600) hours ago"
-        } else if seconds < 172800 {
-            return "Yesterday"
-        } else {
-            return "\(seconds / 86400) days ago"
-        }
-    }
-}
 
 extension Date {
     func timeAgoString() -> String {
@@ -126,11 +50,7 @@ extension Date {
     }
 }
 
-enum HistoryFilter: String, Codable {
-    case date
-    case category
-    case amount
-}
+
 
 
 class ExpenseFunction: ObservableObject {
@@ -163,8 +83,6 @@ class ExpenseFunction: ObservableObject {
             return expense.sorted { $0.amount > $1.amount }
         }
     }
-
-
 
     init(){
         load()
@@ -322,18 +240,18 @@ class ExpenseFunction: ObservableObject {
     }
     
     func largePurchase(amount:Double){//make message and put it in notification array
-        
+        let display = String(format: "%.2f", amount)
         let newNotification = NotificationMessage(
             id: UUID(),
             title: "Large Purchase Alert!",
-            body: "You just made a large purchase of $\(amount)",
+            body: "You just made a large purchase of $\(display)",
             imageString: "exclamationmark.circle.fill",
             date: Date()
         )
         messages.append(newNotification)
         showAlertBanner(
             title: "Large Purchase Alert!",
-            message: "You spent $\(amount) in a single purchase"
+            message: "You spent $\(display) in a single purchase"
         )
         saveNotification()
 
