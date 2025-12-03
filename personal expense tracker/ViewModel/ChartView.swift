@@ -36,17 +36,17 @@ struct ExpensePieChart: View {
            }
            else
            {
-               Chart(expenseData1.expense) { item in
+               Chart(expenseData1.groupedCategoryTotals, id: \.category) { item in
                    SectorMark(
-                       angle: .value("Amount", item.amount),
-                       innerRadius: .ratio(0.6),
-                       angularInset: 0.0
+                       angle: .value("Amount", item.total),
+                       innerRadius: .ratio(0.6)
                    )
                    .foregroundStyle(expenseData1.colorForCategory(named: item.category))
-
                }
-               .chartLegend(position: .bottom, spacing: 10)
+               .chartLegend(position: .bottom)
                .frame(height: 300)
+               
+
                
                VStack(spacing: 4) {
                    Text("Amount Spent")

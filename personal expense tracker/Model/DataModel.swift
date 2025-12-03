@@ -278,28 +278,24 @@ class ExpenseFunction: ObservableObject {
     
   
     func checkNotification(for category: categoryData, newAmount: Double) {
-        
-        // 1. Compute total for this category after adding the new amount
-        let total = expense
+        let total = expense//compute total for this category after adding the new amount
             .filter { $0.category == category.catname }
             .map(\.amount)
             .reduce(0, +)
 
-        // 2. Check overspend
-        if total > Double(category.target) {
+       
+        if total > Double(category.target) {// check overspend
             overspend(amount: total, category: category)
         }
 
-        // 3. Largest previous purchase BEFORE adding the new one
-        let largestPrevious = expense
+       
+        let largestPrevious = expense  // largest previous purchase before adding the new one
             .filter { $0.category == category.catname }
             .map(\.amount)
             .max() ?? 0
-        print("largestPrevious: \(largestPrevious)")
-        print("newAmount: \(newAmount)")
-        // 4. Check if new amount is the largest purchase
-        if newAmount >= largestPrevious {
-            print("calling large purchase")
+       
+        
+        if newAmount >= largestPrevious {// check if new amount is the largest purchase
             largePurchase(amount: newAmount)
         }
     }
@@ -366,4 +362,16 @@ class ExpenseFunction: ObservableObject {
         }
         return .gray
     }
+    
+    var groupedCategoryTotals: [(category: String, total: Double)] {
+        Dictionary(grouping: expense, by: { $0.category })
+            .map { (category, items) in
+                (category: category,
+                 total: items.map { $0.amount }.reduce(0, +))
+            }
+            .sorted { $0.category < $1.category }
+    }
+
+
+    
 }
