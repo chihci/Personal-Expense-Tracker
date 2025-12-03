@@ -11,7 +11,7 @@ import Charts
 struct ExpensePieChart: View {
     @EnvironmentObject var expenseData1: ExpenseFunction
     @EnvironmentObject var converter: CurrencyConverter
-   // let expenses: [ExpenseCategory] = expenseData
+   
    var body: some View {
        ZStack{
            if expenseData1.expense.isEmpty {

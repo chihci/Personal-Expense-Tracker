@@ -9,6 +9,9 @@ import SwiftUI
 import Charts
 
 struct DetailView: View {
+    @EnvironmentObject var expenseData1: ExpenseFunction
+    @EnvironmentObject var converter: CurrencyConverter
+    
     var body: some View {
         NavigationStack{
             ZStack{
@@ -48,4 +51,6 @@ struct DetailView: View {
 
 #Preview {
     DetailView()
+        .environmentObject(ExpenseFunction())
+        .environmentObject(CurrencyConverter())
 }

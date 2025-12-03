@@ -34,7 +34,12 @@ struct CurrencySelectionView: View {
                     }
                 }
             }
-            .navigationTitle("Choose Currency")
+            .navigationTitle(Text("Choose Currency"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color(hex:"2C3E50"), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+
         }
         
     }
